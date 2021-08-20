@@ -22,120 +22,137 @@ import com.shopme.common.entity.User;
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @Rollback(false)
 public class UserRepositoryTests {
-
 	@Autowired
 	private UserRepository repo;
+	
 	@Autowired
 	private TestEntityManager entityManager;
-
+	
 	@Test
-	public void testCreateUserWithOneRole() {
+	public void testCreateNewUserWithOneRole() {
 		Role roleAdmin = entityManager.find(Role.class, 1);
-		User user = new User("minh@codejava.net", "minh2021", "Nguyen", "Ngoc Minh");
-		user.addRole(roleAdmin);
-
-		User savedUser = repo.save(user);
+		User userNamHM = new User("nam@codejava.net", "nam2020", "Nam", "Ha Minh");
+		userNamHM.addRole(roleAdmin);
+		
+		User savedUser = repo.save(userNamHM);
+		
 		assertThat(savedUser.getId()).isGreaterThan(0);
 	}
-
+	
 	@Test
-	public void testCreateUserWithTwoRoles() {
+	public void testCreateNewUserWithTwoRoles() {
 		User userRavi = new User("ravi@gmail.com", "ravi2020", "Ravi", "Kumar");
 		Role roleEditor = new Role(3);
 		Role roleAssistant = new Role(5);
+		
 		userRavi.addRole(roleEditor);
 		userRavi.addRole(roleAssistant);
-
+		
 		User savedUser = repo.save(userRavi);
+		
 		assertThat(savedUser.getId()).isGreaterThan(0);
-
 	}
-
+	
 	@Test
-	public void testListAllUser() {
-		Iterable<User> users = repo.findAll();
-		users.forEach(user -> System.out.println(user));
+	public void testListAllUsers() {
+		Iterable<User> listUsers = repo.findAll();
+		listUsers.forEach(user -> System.out.println(user));
 	}
-
+	
 	@Test
 	public void testGetUserById() {
-		User userTest = repo.findById(1).get();
-		System.out.println(userTest);
-		assertThat(userTest).isNotNull();
+		User userNam = repo.findById(1).get();
+		System.out.println(userNam);
+		assertThat(userNam).isNotNull();
 	}
-
+	
 	@Test
 	public void testUpdateUserDetails() {
-		User userUpdate = repo.findById(1).get();
-		userUpdate.setEnabled(true);
-		userUpdate.setEmail("nnminh24@gmail.com");
-		repo.save(userUpdate);
-
+		User userNam = repo.findById(1).get();
+		userNam.setEnabled(true);
+		userNam.setEmail("namjavaprogrammer@gmail.com");
+		
+		repo.save(userNam);
 	}
-
+	
 	@Test
 	public void testUpdateUserRoles() {
-		User updatedUser = repo.findById(2).get();
+		User userRavi = repo.findById(2).get();
 		Role roleEditor = new Role(3);
-		Role roleSaleperson = new Role(2);
-
-		updatedUser.getRoles().remove(roleEditor);
-		updatedUser.addRole(roleSaleperson);
-
-		repo.save(updatedUser);
+		Role roleSalesperson = new Role(2);
+		
+		userRavi.getRoles().remove(roleEditor);
+		userRavi.addRole(roleSalesperson);
+		
+		repo.save(userRavi);
 	}
-
+	
 	@Test
 	public void testDeleteUser() {
-		Integer id = 2;
-		repo.deleteById(id);
+		Integer userId = 2;
+		repo.deleteById(userId);
+		
 	}
-
+	
 	@Test
 	public void testGetUserByEmail() {
-		String testEmail = "cuckoo310@gmail.com";
-		User user = repo.getUserByEmail(testEmail);
+		String email = "ravi@gmail.com";
+		User user = repo.getUserByEmail(email);
+		
 		assertThat(user).isNotNull();
 	}
-
+	
 	@Test
 	public void testCountById() {
 		Integer id = 1;
 		Long countById = repo.countById(id);
+		
 		assertThat(countById).isNotNull().isGreaterThan(0);
 	}
-
+	
 	@Test
-	public void testEnableUser() {
+	public void testDisableUser() {
 		Integer id = 1;
 		repo.updateEnabledStatus(id, false);
+		
 	}
-
+	
+	@Test
+	public void testEnableUser() {
+		Integer id = 3;
+		repo.updateEnabledStatus(id, true);
+		
+	}	
+	
 	@Test
 	public void testListFirstPage() {
+		int pageNumber = 0;
 		int pageSize = 4;
-		int pageNum = 1;
-
-		Pageable pageable = PageRequest.of(pageNum, pageSize);
+		
+		Pageable pageable = PageRequest.of(pageNumber, pageSize);
 		Page<User> page = repo.findAll(pageable);
-
-		List<User> users = page.getContent();
-		users.forEach(user -> System.out.println(user));
-		assertThat(users.size()).isEqualTo(pageSize);
+		
+		List<User> listUsers = page.getContent();
+		
+		listUsers.forEach(user -> System.out.println(user));
+		
+		assertThat(listUsers.size()).isEqualTo(pageSize);
 	}
-
+	
 	@Test
-	public void testSearchUser() {
+	public void testSearchUsers() {
 		String keyword = "bruce";
-		int pageNum = 0;
+	
+		int pageNumber = 0;
 		int pageSize = 4;
-
-		Pageable pageable = PageRequest.of(pageNum, pageSize);
+		
+		Pageable pageable = PageRequest.of(pageNumber, pageSize);
 		Page<User> page = repo.findAll(keyword, pageable);
-
-		List<User> users = page.getContent();
-		users.forEach(user -> System.out.println(user));
-
-		assertThat(users.size()).isGreaterThan(0);
+		
+		List<User> listUsers = page.getContent();
+		
+		listUsers.forEach(user -> System.out.println(user));	
+		
+		assertThat(listUsers.size()).isGreaterThan(0);
 	}
 }

@@ -10,10 +10,10 @@ import com.shopme.admin.user.UserService;
 @RestController
 public class UserRestController {
 	@Autowired
-	private UserService userService;
-
+	private UserService service;
+	
 	@PostMapping("/users/check_email")
-	public String checkDuplicatedEmail(@Param("id") Integer id, @Param("email") String email) {
-		return userService.isEmailUnique(id, email) ? "Ok" : "Duplicated";
+	public String checkDuplicateEmail(@Param("id") Integer id, @Param("email") String email) {
+		return service.isEmailUnique(id, email) ? "OK" : "Duplicated";
 	}
 }
